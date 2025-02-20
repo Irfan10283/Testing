@@ -32,8 +32,8 @@ jobs:
 
     - name: Start server
       run: |
-        uvicorn main:app --host 0.0.0.0 --port 8000
-      background: true
+        nohup uvicorn main:app --host 0.0.0.0 --port 8000 > /dev/null 2>&1 &
+        echo $! > server.pid
 
     - name: Wait for server to start
       run: |
@@ -42,3 +42,7 @@ jobs:
     - name: Test server
       run: |
         curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep "200"
+
+    - name: Stop server
+      run: |
+        kill $(cat server.pid)
